@@ -35,7 +35,7 @@
             overflow-x: hidden;
         }
 
-        /* LOCK SCREEN */
+        /* ── LOCK ── */
         #lock-screen {
             display: flex;
             flex-direction: column;
@@ -67,7 +67,7 @@
         }
         #password-input:focus { border-color: var(--accent); }
 
-        /* JOURNAL CONTAINER */
+        /* ── JOURNAL ── */
         #journal-container {
             display: none;
             width: 100%;
@@ -78,7 +78,7 @@
             transition: opacity 0.6s ease, transform 0.6s ease;
         }
 
-        /* HEADER */
+        /* ── HEADER ── */
         header {
             display: flex;
             justify-content: space-between;
@@ -109,7 +109,7 @@
         }
         .add-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-        /* COMPOSER PANEL */
+        /* ── COMPOSER ── */
         .composer-wrapper {
             max-height: 0;
             overflow: hidden;
@@ -150,7 +150,55 @@
             line-height: 1.75;
             margin-bottom: 1.4rem;
         }
-        .composer-actions { text-align: right; }
+
+        /* score picker in composer */
+        .score-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1.4rem;
+        }
+        .score-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+        .score-dots {
+            display: flex;
+            gap: 0.4rem;
+        }
+        .score-pip {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1.5px solid rgba(113,128,150,0.35);
+            background: transparent;
+            cursor: pointer;
+            font-family: var(--font-ui);
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.18s;
+            padding: 0;
+        }
+        .score-pip:hover { border-color: var(--accent); color: var(--accent); }
+        .score-pip.selected {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--bg);
+            box-shadow: 0 0 8px rgba(167,139,250,0.5);
+        }
+
+        .composer-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
         .record-btn {
             background: var(--accent);
             color: var(--bg);
@@ -162,100 +210,267 @@
             padding: 0.5rem 1.6rem;
             border-radius: 20px;
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: opacity 0.2s, transform 0.15s;
         }
-        .record-btn:hover { opacity: 0.8; }
+        .record-btn:hover { opacity: 0.8; transform: translateY(-1px); }
+        .record-btn:active { transform: translateY(0); }
+        .record-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-        /* TIMELINE */
-        .timeline {
+        /* ── HORIZONTAL TIMELINE ── */
+        .timeline-section {
+            position: relative;
+            width: 100%;
+            padding: 56px 0 72px;
+        }
+
+        /* the spine line */
+        .tl-spine {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            transform: translateY(-50%);
+            background: linear-gradient(
+                to right,
+                transparent 0%,
+                rgba(113,128,150,0.28) 6%,
+                rgba(113,128,150,0.28) 94%,
+                transparent 100%
+            );
+            pointer-events: none;
+        }
+
+        /* scrollable dot track */
+        .tl-track {
+            position: relative;
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            overflow-y: visible;
+            padding: 0 2.5rem;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            min-height: 144px;
+        }
+        .tl-track::-webkit-scrollbar { display: none; }
+
+        /* single entry node */
+        .tl-node {
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 100%;
+            flex-shrink: 0;
+            padding: 0 30px;
+            cursor: pointer;
         }
-        .timeline-node {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-        }
-        .timeline-dot {
-            width: 9px;
-            height: 9px;
+
+        /* the dot — color reflects score */
+        .tl-dot {
+            width: 11px;
+            height: 11px;
             border-radius: 50%;
-            background: var(--muted);
+            position: relative;
+            z-index: 2;
             flex-shrink: 0;
-            cursor: pointer;
-            transition: background 0.3s, box-shadow 0.3s;
+            transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1),
+                        box-shadow 0.3s ease;
         }
-        .timeline-node.active .timeline-dot,
-        .timeline-node:hover .timeline-dot {
-            background: var(--accent);
-            box-shadow: 0 0 10px var(--accent);
-        }
-        .timeline-connector {
-            width: 1px;
-            background: rgba(113,128,150,0.25);
-            flex-shrink: 0;
-        }
-        .connector-top { height: 16px; }
-        .connector-bottom { height: 28px; }
-        .timeline-node:last-child .connector-bottom { display: none; }
+        /* score-based dot colors: low=dim, mid=neutral, high=bright */
+        .tl-dot[data-score="0"]  { background: #4a5568; }
+        .tl-dot[data-score="1"]  { background: #4a5568; }
+        .tl-dot[data-score="2"]  { background: #5a6070; }
+        .tl-dot[data-score="3"]  { background: #718096; }
+        .tl-dot[data-score="4"]  { background: #7c8fa3; }
+        .tl-dot[data-score="5"]  { background: #8fa3b8; }
+        .tl-dot[data-score="6"]  { background: #7ec8a4; }
+        .tl-dot[data-score="7"]  { background: #a3d9bc; }
+        .tl-dot[data-score="8"]  { background: #c4b5fd; }
+        .tl-dot[data-score="9"]  { background: #a78bfa; }
 
-        /* ENTRY CARD */
-        .entry-card {
-            width: 100%;
-            background: var(--card);
-            border: 1px solid rgba(113,128,150,0.1);
-            border-radius: 14px;
-            padding: 1.3rem 1.5rem;
-            cursor: pointer;
-            transition: border-color 0.25s;
+        .tl-node:hover .tl-dot {
+            transform: scale(1.7);
+            box-shadow: 0 0 0 3px rgba(167,139,250,0.18), 0 0 16px rgba(167,139,250,0.4);
         }
-        .timeline-node:hover .entry-card,
-        .timeline-node.active .entry-card {
-            border-color: rgba(167,139,250,0.25);
+
+        /* hover preview floats above the dot */
+        .tl-preview {
+            position: absolute;
+            bottom: calc(100% + 20px);
+            left: 50%;
+            transform: translateX(-50%) translateY(8px);
+            background: #25282e;
+            border: 1px solid rgba(167,139,250,0.18);
+            border-radius: 10px;
+            padding: 0.65rem 0.9rem;
+            min-width: 140px;
+            max-width: 190px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.22s ease, transform 0.28s cubic-bezier(0.34,1.2,0.64,1);
+            z-index: 20;
+            text-align: center;
         }
-        .entry-date {
-            font-size: 0.7rem;
+        .tl-node:hover .tl-preview {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        /* arrow */
+        .tl-preview::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: rgba(167,139,250,0.18);
+        }
+        .tl-preview-score {
+            font-size: 1.1rem;
             font-weight: 700;
-            letter-spacing: 2.5px;
+            color: var(--accent);
+            letter-spacing: 1px;
+            margin-bottom: 0.2rem;
+        }
+        .tl-preview-score span {
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+        .tl-preview-date {
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 2px;
             color: var(--muted);
             text-transform: uppercase;
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.18rem;
         }
-        .entry-title {
-            font-size: 1.2rem;
-            font-weight: 500;
+        .tl-preview-title {
+            font-size: 0.82rem;
+            font-weight: 600;
             color: var(--text);
-            transition: color 0.25s;
-        }
-        .timeline-node:hover .entry-title,
-        .timeline-node.active .entry-title { color: var(--accent); }
-
-        .entry-content-wrapper {
-            max-height: 0;
+            white-space: nowrap;
             overflow: hidden;
-            transition: max-height 0.45s ease-out;
+            text-overflow: ellipsis;
         }
-        .timeline-node.active .entry-content-wrapper { max-height: 3000px; }
 
-        .entry-content {
+        /* ── ENTRY VIEW MODAL ── */
+        #entry-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(8,9,11,0.8);
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        #entry-modal.open {
+            display: flex;
+            animation: fadein 0.25s ease forwards;
+        }
+        @keyframes fadein { from { opacity:0; } to { opacity:1; } }
+        @keyframes slideup {
+            from { transform: translateY(20px); opacity:0; }
+            to   { transform: translateY(0);    opacity:1; }
+        }
+
+        .entry-modal-box {
+            background: #1e2124;
+            border-radius: 18px;
+            padding: 2.2rem 2.4rem;
+            width: 100%;
+            max-width: 600px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid rgba(113,128,150,0.12);
+            scrollbar-width: thin;
+            scrollbar-color: rgba(113,128,150,0.2) transparent;
+            animation: slideup 0.32s cubic-bezier(0.34,1.2,0.64,1) forwards;
+        }
+
+        /* score badge at top of view modal */
+        .view-score-badge {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 2px;
+            margin-bottom: 1rem;
+        }
+        .view-score-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1;
+            color: var(--accent);
+        }
+        .view-score-denom {
+            font-size: 1rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+        /* filled pip bar under the number */
+        .view-score-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 1.4rem;
+        }
+        .view-score-bar-pip {
+            height: 3px;
+            flex: 1;
+            border-radius: 2px;
+            background: rgba(113,128,150,0.2);
+            transition: background 0.3s;
+        }
+        .view-score-bar-pip.filled { background: var(--accent); }
+
+        .view-date {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+        }
+        .view-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 1.5rem;
+            line-height: 1.3;
+        }
+        .view-content {
             font-family: var(--font-ink);
             font-size: 1.2rem;
             color: #b0b9c1;
-            padding-top: 1.1rem;
             white-space: pre-line;
-            line-height: 1.85;
+            line-height: 1.9;
+            margin-bottom: 2rem;
         }
-        .entry-actions {
+        .view-actions {
             display: flex;
             justify-content: flex-end;
             gap: 0.6rem;
-            margin-top: 1.2rem;
-            padding-top: 1rem;
+            padding-top: 1.2rem;
             border-top: 1px solid rgba(113,128,150,0.1);
         }
+        .view-close-btn {
+            margin-right: auto;
+            background: transparent;
+            border: 1px solid rgba(113,128,150,0.25);
+            color: var(--muted);
+            font-family: var(--font-ui);
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: all 0.2s;
+        }
+        .view-close-btn:hover { border-color: var(--muted); color: var(--text); }
         .entry-edit-btn, .entry-delete-btn {
             background: transparent;
             font-family: var(--font-ui);
@@ -279,18 +494,23 @@
         }
         .entry-delete-btn:hover { background: rgba(239,68,68,0.08); }
 
-        /* EDIT MODAL */
+        /* ── EDIT MODAL ── */
         #edit-modal {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.75);
+            background: rgba(8,9,11,0.82);
             z-index: 100;
             align-items: center;
             justify-content: center;
             padding: 2rem;
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
         }
-        #edit-modal.open { display: flex; }
+        #edit-modal.open {
+            display: flex;
+            animation: fadein 0.22s ease forwards;
+        }
         .modal-box {
             background: #22262b;
             border-radius: 16px;
@@ -298,6 +518,9 @@
             width: 100%;
             max-width: 560px;
             border: 1px solid rgba(113,128,150,0.15);
+            animation: slideup 0.28s cubic-bezier(0.34,1.2,0.64,1) forwards;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         .modal-entry-title {
             font-size: 1.2rem;
@@ -339,6 +562,13 @@
             resize: vertical;
             min-height: 160px;
             line-height: 1.8;
+            margin-bottom: 1.4rem;
+        }
+        /* score picker reused in edit modal */
+        .modal-score-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
             margin-bottom: 1.6rem;
         }
         .modal-actions {
@@ -374,6 +604,29 @@
         }
         .modal-save-btn:hover { opacity: 0.8; }
 
+        /* ── TOAST ── */
+        #toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: #2d3139;
+            color: var(--text);
+            font-family: var(--font-ui);
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.55rem 1.4rem;
+            border-radius: 20px;
+            border: 1px solid rgba(113,128,150,0.15);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.28s ease, transform 0.28s ease;
+            z-index: 200;
+            white-space: nowrap;
+        }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        #toast.error { border-color: rgba(239,68,68,0.3); color: #ef4444; }
+
         .empty-state {
             color: var(--muted);
             font-family: var(--font-ui);
@@ -386,30 +639,62 @@
 </head>
 <body>
 
+    <!-- LOCK -->
     <div id="lock-screen">
         <h1>Solo Sortie</h1>
         <input type="password" id="password-input" placeholder="password" autofocus>
     </div>
 
+    <!-- JOURNAL -->
     <div id="journal-container">
         <header>
             <h2>The Log</h2>
             <button class="add-btn" onclick="toggleComposer()">+ Add Entry</button>
         </header>
 
+        <!-- COMPOSER -->
         <div class="composer-wrapper" id="composer-panel">
             <div class="composer">
                 <input type="text" id="new-title" placeholder="Title" autocomplete="off">
                 <textarea id="new-content" placeholder="Write here champ."></textarea>
+                <!-- score picker -->
+                <div class="score-row">
+                    <span class="score-label">Score</span>
+                    <div class="score-dots" id="composer-score-dots"></div>
+                </div>
                 <div class="composer-actions">
-                    <button class="record-btn" onclick="addEntry()">Record</button>
+                    <button class="record-btn" id="record-btn" onclick="addEntry()">Record</button>
                 </div>
             </div>
         </div>
 
-        <div class="timeline" id="timeline-target"></div>
+        <!-- HORIZONTAL TIMELINE -->
+        <div class="timeline-section">
+            <div class="tl-spine"></div>
+            <div class="tl-track" id="timeline-target"></div>
+        </div>
     </div>
 
+    <!-- ENTRY VIEW MODAL -->
+    <div id="entry-modal">
+        <div class="entry-modal-box">
+            <div class="view-score-badge">
+                <span class="view-score-number" id="view-score-num">—</span>
+                <span class="view-score-denom">/9</span>
+            </div>
+            <div class="view-score-bar" id="view-score-bar"></div>
+            <div class="view-date" id="view-date"></div>
+            <div class="view-title" id="view-title"></div>
+            <div class="view-content" id="view-content"></div>
+            <div class="view-actions">
+                <button class="view-close-btn" onclick="closeEntryModal()">Close</button>
+                <button class="entry-edit-btn" onclick="openEditFromView()">Edit</button>
+                <button class="entry-delete-btn" onclick="deleteFromView()">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT MODAL -->
     <div id="edit-modal">
         <div class="modal-box">
             <div class="modal-entry-title" id="modal-title-display"></div>
@@ -417,71 +702,113 @@
             <input type="text" id="edit-date" autocomplete="off">
             <div class="modal-label">Entry</div>
             <textarea id="edit-content"></textarea>
+            <div class="modal-score-row">
+                <span class="score-label">Score</span>
+                <div class="score-dots" id="edit-score-dots"></div>
+            </div>
             <div class="modal-actions">
-                <button class="modal-cancel-btn" onclick="closeModal()">Cancel</button>
+                <button class="modal-cancel-btn" onclick="closeEditModal()">Cancel</button>
                 <button class="modal-save-btn" onclick="saveEdit()">Save</button>
             </div>
         </div>
     </div>
 
+    <!-- TOAST -->
+    <div id="toast"></div>
+
     <script>
         const PASSWORD_ENABLED = true;
         const JOURNAL_PASSWORD = "29";
 
-        const lockScreen = document.getElementById('lock-screen');
-        const passwordInput = document.getElementById('password-input');
+        const lockScreen       = document.getElementById('lock-screen');
+        const passwordInput    = document.getElementById('password-input');
         const journalContainer = document.getElementById('journal-container');
-        const timelineTarget = document.getElementById('timeline-target');
-        const composerPanel = document.getElementById('composer-panel');
-        const editModal = document.getElementById('edit-modal');
+        const timelineTarget   = document.getElementById('timeline-target');
+        const composerPanel    = document.getElementById('composer-panel');
+        const entryModal       = document.getElementById('entry-modal');
+        const editModal        = document.getElementById('edit-modal');
+        const toastEl          = document.getElementById('toast');
 
-        let editingId = null;
+        let allEntries = [];
+        let viewingId  = null;
+        let editingId  = null;
+        let toastTimer = null;
+        let composerScore = 0;
+        let editScore     = 0;
 
-        // ── DATA MANAGEMENT ─────────────────────────────────
+        // ── SCORE PIPS ────────────────────────────────────
+
+        function buildScorePips(containerId, onSelect) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            for (let i = 1; i <= 9; i++) {
+                const pip = document.createElement('button');
+                pip.className = 'score-pip';
+                pip.textContent = i;
+                pip.type = 'button';
+                pip.dataset.val = i;
+                pip.addEventListener('click', () => onSelect(i));
+                container.appendChild(pip);
+            }
+        }
+
+        function setComposerScore(val) {
+            composerScore = val;
+            document.querySelectorAll('#composer-score-dots .score-pip').forEach(p => {
+                p.classList.toggle('selected', parseInt(p.dataset.val) === val);
+            });
+        }
+
+        function setEditScore(val) {
+            editScore = val;
+            document.querySelectorAll('#edit-score-dots .score-pip').forEach(p => {
+                p.classList.toggle('selected', parseInt(p.dataset.val) === val);
+            });
+        }
+
+        // ── TOAST ─────────────────────────────────────────
+
+        function showToast(msg, isError = false) {
+            clearTimeout(toastTimer);
+            toastEl.textContent = msg;
+            toastEl.className = isError ? 'error' : '';
+            void toastEl.offsetWidth;
+            toastEl.classList.add('show');
+            toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2800);
+        }
+
+        // ── DATA ──────────────────────────────────────────
 
         async function loadTimeline() {
             try {
                 const res = await fetch('/api/entries');
-                if (!res.ok) throw new Error('Database request failed');
-                const entries = await res.json();
-
-                if (!entries.length) {
-                    timelineTarget.innerHTML = '<div class="empty-state">No entries yet. The page is blank.</div>';
-                    return;
-                }
-
-                timelineTarget.innerHTML = entries.map(e => {
-                    const safeTitle = escHTML(e.title);
-                    const safeDate = escHTML(e.date);
-                    const safeContent = escHTML(e.content);
-                    return `
-                    <div class="timeline-node" data-id="${e.id}">
-                        <div class="timeline-dot" onclick="toggleEntry(this.closest('.timeline-node'))"></div>
-                        <div class="timeline-connector connector-top"></div>
-                        <div class="entry-card" onclick="toggleEntry(this.closest('.timeline-node'))">
-                            <div class="entry-date">${safeDate}</div>
-                            <div class="entry-title">${safeTitle}</div>
-                            <div class="entry-content-wrapper">
-                                <div class="entry-content">${safeContent}</div>
-                                <div class="entry-actions">
-                                    <button class="entry-edit-btn" onclick="handleEditClick(event, ${e.id})">Edit</button>
-                                    <button class="entry-delete-btn" onclick="handleDeleteClick(event, ${e.id})">Delete</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="timeline-connector connector-bottom"></div>
-                    </div>`;
-                }).join('');
-
-                // Cache entry structures onto their respective nodes safely
-                entries.forEach(e => {
-                    const node = timelineTarget.querySelector(`.timeline-node[data-id="${e.id}"]`);
-                    if (node) node._data = e;
-                });
-
-            } catch (err) {
-                timelineTarget.innerHTML = '<div style="color:#ef4444;font-family:var(--font-ui);text-align:center;padding:2rem">Could not connect to database. Check configuration.</div>';
+                if (!res.ok) throw new Error('failed');
+                allEntries = await res.json();
+                renderTimeline(allEntries);
+            } catch {
+                timelineTarget.innerHTML = '<div class="empty-state">Could not connect to database.</div>';
             }
+        }
+
+        function renderTimeline(entries) {
+            if (!entries.length) {
+                timelineTarget.innerHTML = '<div class="empty-state">No entries yet. The page is blank.</div>';
+                return;
+            }
+
+            timelineTarget.innerHTML = entries.map((e, i) => {
+                const score = e.score || 0;
+                return `
+                <div class="tl-node" data-id="${e.id}" onclick="openEntryModal(${e.id})"
+                     style="animation: dotPop 0.38s cubic-bezier(0.34,1.56,0.64,1) ${i * 55}ms both;">
+                    <div class="tl-preview">
+                        <div class="tl-preview-score">${score}<span>/9</span></div>
+                        <div class="tl-preview-date">${escHTML(e.date)}</div>
+                        <div class="tl-preview-title">${escHTML(e.title)}</div>
+                    </div>
+                    <div class="tl-dot" data-score="${score}"></div>
+                </div>`;
+            }).join('');
         }
 
         function escHTML(str) {
@@ -499,107 +826,142 @@
         }
 
         async function addEntry() {
-            const titleEl = document.getElementById('new-title');
+            const titleEl   = document.getElementById('new-title');
             const contentEl = document.getElementById('new-content');
+            const btn       = document.getElementById('record-btn');
             if (!titleEl.value.trim() || !contentEl.value.trim()) return;
 
             const payload = {
-                date: getFormattedDate(),
-                title: titleEl.value.trim(),
-                content: contentEl.value.trim()
+                date:    getFormattedDate(),
+                title:   titleEl.value.trim(),
+                content: contentEl.value.trim(),
+                score:   composerScore
             };
 
-            titleEl.disabled = contentEl.disabled = true;
+            btn.textContent = 'Saving…';
+            btn.disabled = true;
             try {
                 const res = await fetch('/api/entries', {
-                    method: 'POST',
+                    method:  'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body:    JSON.stringify(payload)
                 });
                 if (res.ok) {
                     titleEl.value = contentEl.value = '';
+                    setComposerScore(0);
                     toggleComposer();
                     await loadTimeline();
+                    showToast('Entry recorded.');
                 } else {
                     const msg = await res.text();
-                    alert('Failed to save: ' + msg);
+                    showToast('Failed to save: ' + msg, true);
                 }
-            } catch { alert('Network error encountered.'); }
-            titleEl.disabled = contentEl.disabled = false;
+            } catch { showToast('Network error.', true); }
+            btn.textContent = 'Record';
+            btn.disabled = false;
         }
 
-        // Contextual handlers cleanly intercepting click event bubbles
-        function handleEditClick(event, id) {
-            event.stopPropagation();
-            openEdit(id);
+        // ── ENTRY VIEW MODAL ──────────────────────────────
+
+        function openEntryModal(id) {
+            const e = allEntries.find(x => x.id === id);
+            if (!e) return;
+            viewingId = id;
+
+            const score = e.score || 0;
+            document.getElementById('view-score-num').textContent = score;
+            document.getElementById('view-date').textContent      = e.date;
+            document.getElementById('view-title').textContent     = e.title;
+            document.getElementById('view-content').textContent   = e.content;
+
+            // build score bar
+            const bar = document.getElementById('view-score-bar');
+            bar.innerHTML = '';
+            for (let i = 1; i <= 9; i++) {
+                const pip = document.createElement('div');
+                pip.className = 'view-score-bar-pip' + (i <= score ? ' filled' : '');
+                bar.appendChild(pip);
+            }
+
+            entryModal.classList.add('open');
         }
 
-        function handleDeleteClick(event, id) {
-            event.stopPropagation();
-            deleteEntry(id);
+        function closeEntryModal() {
+            entryModal.classList.remove('open');
+            viewingId = null;
         }
 
-        async function deleteEntry(id) {
-            if (!confirm('Delete this journal entry permanently?')) return;
+        function openEditFromView() {
+            if (!viewingId) return;
+            const id = viewingId;
+            closeEntryModal();
+            setTimeout(() => openEditModal(id), 80);
+        }
+
+        async function deleteFromView() {
+            if (!viewingId) return;
+            const id = viewingId;
+            if (!confirm('Delete this entry permanently?')) return;
             try {
                 const res = await fetch('/api/entries/' + id, { method: 'DELETE' });
-                if (res.ok) await loadTimeline();
-                else alert('Delete action failed.');
-            } catch { alert('Network error encountered.'); }
+                if (res.ok) {
+                    closeEntryModal();
+                    await loadTimeline();
+                    showToast('Entry deleted.');
+                } else { showToast('Delete failed.', true); }
+            } catch { showToast('Network error.', true); }
         }
 
-        // ── EDIT MODAL ACTIONS ──────────────────────────────
+        // ── EDIT MODAL ────────────────────────────────────
 
-        function openEdit(id) {
-            const node = timelineTarget.querySelector('.timeline-node[data-id="' + id + '"]');
-            if (!node || !node._data) return;
-            const e = node._data;
+        function openEditModal(id) {
+            const e = allEntries.find(x => x.id === id);
+            if (!e) return;
             editingId = id;
             document.getElementById('modal-title-display').textContent = e.title;
-            document.getElementById('edit-date').value = e.date;
+            document.getElementById('edit-date').value    = e.date;
             document.getElementById('edit-content').value = e.content;
+            setEditScore(e.score || 0);
             editModal.classList.add('open');
         }
 
-        function closeModal() {
+        function closeEditModal() {
             editModal.classList.remove('open');
             editingId = null;
         }
 
+        // legacy alias used by backdrop click
+        function closeModal() { closeEditModal(); }
+
         async function saveEdit() {
-            const date = document.getElementById('edit-date').value.trim();
+            const date    = document.getElementById('edit-date').value.trim();
             const content = document.getElementById('edit-content').value.trim();
             if (!date || !content || !editingId) return;
 
             try {
                 const res = await fetch('/api/entries/' + editingId, {
-                    method: 'PUT',
+                    method:  'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ date, content })
+                    body:    JSON.stringify({ date, content, score: editScore })
                 });
                 if (res.ok) {
-                    closeModal();
+                    closeEditModal();
                     await loadTimeline();
+                    showToast('Entry updated.');
                 } else {
                     const msg = await res.text();
-                    alert('Save failed: ' + msg);
+                    showToast('Save failed: ' + msg, true);
                 }
-            } catch { alert('Network error encountered.'); }
+            } catch { showToast('Network error.', true); }
         }
 
-        editModal.addEventListener('click', e => {
-            if (e.target === editModal) closeModal();
-        });
+        entryModal.addEventListener('click', e => { if (e.target === entryModal) closeEntryModal(); });
+        editModal.addEventListener('click',  e => { if (e.target === editModal)  closeEditModal(); });
 
-        // ── UI INTERACTION INTERFACES ───────────────────────
+        // ── UI ────────────────────────────────────────────
 
         function toggleComposer() {
             composerPanel.classList.toggle('open');
-        }
-
-        function toggleEntry(node) {
-            if (window.getSelection().toString().length) return;
-            node.classList.toggle('active');
         }
 
         function revealJournal() {
@@ -610,14 +972,26 @@
                 setTimeout(() => {
                     journalContainer.style.opacity = '1';
                     journalContainer.style.transform = 'translateY(0)';
-                    loadTimeline(); // <--- SECURE: Only pulls entries AFTER valid login
+                    loadTimeline();
                 }, 40);
             }, 500);
         }
 
-        // ── APPLICATION INITIALIZATION ──────────────────────
+        // ── BOOT ─────────────────────────────────────────
 
         (function init() {
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes dotPop {
+                    from { opacity:0; transform:scale(0); }
+                    to   { opacity:1; transform:scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
+
+            buildScorePips('composer-score-dots', setComposerScore);
+            buildScorePips('edit-score-dots', setEditScore);
+
             if (!PASSWORD_ENABLED) {
                 lockScreen.style.display = 'none';
                 journalContainer.style.display = 'block';
