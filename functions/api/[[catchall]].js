@@ -21,13 +21,13 @@ export async function onRequest(context) {
 
     if (request.method === "POST") {
         try {
-            const { date, title, content } = await request.json();
+            const { date, title, content, score } = await request.json();
             if (!title || !content) {
                 return new Response("Missing title or content", { status: 400 });
             }
             await db.prepare(
-                "INSERT INTO entries (date, title, content) VALUES (?, ?, ?)"
-            ).bind(date, title, content).run();
+                "INSERT INTO entries (date, title, content, score) VALUES (?, ?, ?, ?)"
+            ).bind(date, title, content, score ?? 0).run();
             return new Response("Entry saved", { status: 201 });
         } catch (err) {
             return new Response(err.message, { status: 500 });
@@ -37,13 +37,13 @@ export async function onRequest(context) {
     if (request.method === "PUT") {
         if (!id) return new Response("Missing entry ID", { status: 400 });
         try {
-            const { date, content } = await request.json();
+            const { date, content, score } = await request.json();
             if (!date || !content) {
                 return new Response("Missing date or content", { status: 400 });
             }
             await db.prepare(
-                "UPDATE entries SET date = ?, content = ? WHERE id = ?"
-            ).bind(date, content, id).run();
+                "UPDATE entries SET date = ?, content = ?, score = ? WHERE id = ?"
+            ).bind(date, content, score ?? 0, id).run();
             return new Response("Entry updated", { status: 200 });
         } catch (err) {
             return new Response(err.message, { status: 500 });
