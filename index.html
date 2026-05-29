@@ -113,11 +113,15 @@
         .composer-wrapper {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.55s cubic-bezier(0.4,0,0.2,1);
+            transition: max-height 0.55s cubic-bezier(0.4,0,0.2,1),
+                        margin-bottom 0.55s cubic-bezier(0.4,0,0.2,1),
+                        opacity 0.3s ease;
+            opacity: 0;
         }
         .composer-wrapper.open {
             max-height: 2000px;
             margin-bottom: 3rem;
+            opacity: 1;
         }
         .composer {
             background: var(--card);
@@ -151,30 +155,27 @@
             margin-bottom: 1.4rem;
         }
 
-        /* score picker in composer */
+        /* score picker */
         .score-row {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.7rem;
             margin-bottom: 1.4rem;
         }
         .score-label {
-            font-size: 0.7rem;
+            font-size: 0.68rem;
             font-weight: 700;
             letter-spacing: 2px;
             color: var(--muted);
             text-transform: uppercase;
             white-space: nowrap;
         }
-        .score-dots {
-            display: flex;
-            gap: 0.4rem;
-        }
+        .score-dots { display: flex; gap: 0.35rem; }
         .score-pip {
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            border: 1.5px solid rgba(113,128,150,0.35);
+            border: 1.5px solid rgba(113,128,150,0.3);
             background: transparent;
             cursor: pointer;
             font-family: var(--font-ui);
@@ -192,13 +193,10 @@
             background: var(--accent);
             border-color: var(--accent);
             color: var(--bg);
-            box-shadow: 0 0 8px rgba(167,139,250,0.5);
+            box-shadow: 0 0 8px rgba(167,139,250,0.45);
         }
 
-        .composer-actions {
-            display: flex;
-            justify-content: flex-end;
-        }
+        .composer-actions { text-align: right; }
         .record-btn {
             background: var(--accent);
             color: var(--bg);
@@ -216,57 +214,46 @@
         .record-btn:active { transform: translateY(0); }
         .record-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-        /* ── HORIZONTAL TIMELINE ── */
-        .timeline-section {
-            position: relative;
-            width: 100%;
-            padding: 56px 0 72px;
-        }
-
-        /* the spine line */
-        .tl-spine {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 1px;
-            transform: translateY(-50%);
-            background: linear-gradient(
-                to right,
-                transparent 0%,
-                rgba(113,128,150,0.28) 6%,
-                rgba(113,128,150,0.28) 94%,
-                transparent 100%
-            );
-            pointer-events: none;
-        }
-
-        /* scrollable dot track */
-        .tl-track {
+        /* ── VERTICAL TIMELINE ── */
+        .timeline {
             position: relative;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            overflow-x: auto;
-            overflow-y: visible;
-            padding: 0 2.5rem;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-            min-height: 144px;
+            width: 100%;
         }
-        .tl-track::-webkit-scrollbar { display: none; }
 
-        /* single entry node */
+        /* the vertical spine */
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            transform: translateX(-50%);
+            background: linear-gradient(
+                to bottom,
+                transparent 0%,
+                rgba(113,128,150,0.25) 4%,
+                rgba(113,128,150,0.25) 96%,
+                transparent 100%
+            );
+        }
+
+        /* each entry node */
         .tl-node {
             position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
-            flex-shrink: 0;
-            padding: 0 30px;
+            width: 100%;
+            margin-bottom: 2.8rem;
             cursor: pointer;
         }
+        .tl-node:last-child { margin-bottom: 0; }
 
-        /* the dot — color reflects score */
+        /* the dot — sits on the spine */
         .tl-dot {
             width: 11px;
             height: 11px;
@@ -277,64 +264,54 @@
             transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1),
                         box-shadow 0.3s ease;
         }
-        /* score-based dot colors: low=dim, mid=neutral, high=bright */
-        .tl-dot[data-score="0"]  { background: #4a5568; }
-        .tl-dot[data-score="1"]  { background: #4a5568; }
-        .tl-dot[data-score="2"]  { background: #5a6070; }
-        .tl-dot[data-score="3"]  { background: #718096; }
-        .tl-dot[data-score="4"]  { background: #7c8fa3; }
-        .tl-dot[data-score="5"]  { background: #8fa3b8; }
-        .tl-dot[data-score="6"]  { background: #7ec8a4; }
-        .tl-dot[data-score="7"]  { background: #a3d9bc; }
-        .tl-dot[data-score="8"]  { background: #c4b5fd; }
-        .tl-dot[data-score="9"]  { background: #a78bfa; }
+        /* score-based colors */
+        .tl-dot[data-score="0"] { background: #4a5568; }
+        .tl-dot[data-score="1"] { background: #4a5568; }
+        .tl-dot[data-score="2"] { background: #5a6070; }
+        .tl-dot[data-score="3"] { background: #718096; }
+        .tl-dot[data-score="4"] { background: #7c8fa3; }
+        .tl-dot[data-score="5"] { background: #8fa3b8; }
+        .tl-dot[data-score="6"] { background: #7ec8a4; }
+        .tl-dot[data-score="7"] { background: #a3d9bc; }
+        .tl-dot[data-score="8"] { background: #c4b5fd; }
+        .tl-dot[data-score="9"] { background: #a78bfa; }
 
         .tl-node:hover .tl-dot {
             transform: scale(1.7);
-            box-shadow: 0 0 0 3px rgba(167,139,250,0.18), 0 0 16px rgba(167,139,250,0.4);
+            box-shadow: 0 0 0 3px rgba(167,139,250,0.15), 0 0 14px rgba(167,139,250,0.4);
         }
 
-        /* hover preview floats above the dot */
+        /* hover preview — floats to the RIGHT of the dot */
         .tl-preview {
             position: absolute;
-            bottom: calc(100% + 20px);
-            left: 50%;
-            transform: translateX(-50%) translateY(8px);
+            top: 50%;
+            left: calc(50% + 22px);
+            transform: translateY(-50%) translateX(6px);
             background: #25282e;
             border: 1px solid rgba(167,139,250,0.18);
             border-radius: 10px;
-            padding: 0.65rem 0.9rem;
-            min-width: 140px;
-            max-width: 190px;
+            padding: 0.6rem 0.9rem;
+            min-width: 160px;
+            max-width: 220px;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.22s ease, transform 0.28s cubic-bezier(0.34,1.2,0.64,1);
+            transition: opacity 0.22s ease,
+                        transform 0.28s cubic-bezier(0.34,1.2,0.64,1);
             z-index: 20;
-            text-align: center;
+            white-space: nowrap;
         }
         .tl-node:hover .tl-preview {
             opacity: 1;
-            transform: translateX(-50%) translateY(0);
-        }
-        /* arrow */
-        .tl-preview::after {
-            content: '';
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 5px solid transparent;
-            border-top-color: rgba(167,139,250,0.18);
+            transform: translateY(-50%) translateX(0);
         }
         .tl-preview-score {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 700;
             color: var(--accent);
-            letter-spacing: 1px;
-            margin-bottom: 0.2rem;
+            margin-bottom: 0.15rem;
         }
         .tl-preview-score span {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: var(--muted);
             font-weight: 500;
         }
@@ -344,13 +321,12 @@
             letter-spacing: 2px;
             color: var(--muted);
             text-transform: uppercase;
-            margin-bottom: 0.18rem;
+            margin-bottom: 0.15rem;
         }
         .tl-preview-title {
-            font-size: 0.82rem;
+            font-size: 0.85rem;
             font-weight: 600;
             color: var(--text);
-            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
@@ -360,7 +336,7 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(8,9,11,0.8);
+            background: rgba(8,9,11,0.82);
             z-index: 50;
             align-items: center;
             justify-content: center;
@@ -374,10 +350,9 @@
         }
         @keyframes fadein { from { opacity:0; } to { opacity:1; } }
         @keyframes slideup {
-            from { transform: translateY(20px); opacity:0; }
+            from { transform: translateY(22px); opacity:0; }
             to   { transform: translateY(0);    opacity:1; }
         }
-
         .entry-modal-box {
             background: #1e2124;
             border-radius: 18px;
@@ -392,15 +367,15 @@
             animation: slideup 0.32s cubic-bezier(0.34,1.2,0.64,1) forwards;
         }
 
-        /* score badge at top of view modal */
+        /* score badge */
         .view-score-badge {
             display: inline-flex;
             align-items: baseline;
             gap: 2px;
-            margin-bottom: 1rem;
+            margin-bottom: 0.6rem;
         }
         .view-score-number {
-            font-size: 2.2rem;
+            font-size: 2.4rem;
             font-weight: 700;
             line-height: 1;
             color: var(--accent);
@@ -410,7 +385,6 @@
             color: var(--muted);
             font-weight: 500;
         }
-        /* filled pip bar under the number */
         .view-score-bar {
             display: flex;
             gap: 4px;
@@ -420,8 +394,7 @@
             height: 3px;
             flex: 1;
             border-radius: 2px;
-            background: rgba(113,128,150,0.2);
-            transition: background 0.3s;
+            background: rgba(113,128,150,0.18);
         }
         .view-score-bar-pip.filled { background: var(--accent); }
 
@@ -431,13 +404,13 @@
             letter-spacing: 3px;
             color: var(--muted);
             text-transform: uppercase;
-            margin-bottom: 0.4rem;
+            margin-bottom: 0.35rem;
         }
         .view-title {
             font-size: 1.5rem;
             font-weight: 600;
             color: var(--text);
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.4rem;
             line-height: 1.3;
         }
         .view-content {
@@ -483,15 +456,9 @@
             transition: all 0.2s;
             text-transform: uppercase;
         }
-        .entry-edit-btn {
-            border: 1px solid rgba(167,139,250,0.4);
-            color: var(--accent);
-        }
+        .entry-edit-btn { border: 1px solid rgba(167,139,250,0.4); color: var(--accent); }
         .entry-edit-btn:hover { background: rgba(167,139,250,0.1); }
-        .entry-delete-btn {
-            border: 1px solid rgba(239,68,68,0.3);
-            color: #ef4444;
-        }
+        .entry-delete-btn { border: 1px solid rgba(239,68,68,0.3); color: #ef4444; }
         .entry-delete-btn:hover { background: rgba(239,68,68,0.08); }
 
         /* ── EDIT MODAL ── */
@@ -499,7 +466,7 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(8,9,11,0.82);
+            background: rgba(8,9,11,0.85);
             z-index: 100;
             align-items: center;
             justify-content: center;
@@ -517,10 +484,10 @@
             padding: 2rem;
             width: 100%;
             max-width: 560px;
-            border: 1px solid rgba(113,128,150,0.15);
-            animation: slideup 0.28s cubic-bezier(0.34,1.2,0.64,1) forwards;
             max-height: 90vh;
             overflow-y: auto;
+            border: 1px solid rgba(113,128,150,0.15);
+            animation: slideup 0.28s cubic-bezier(0.34,1.2,0.64,1) forwards;
         }
         .modal-entry-title {
             font-size: 1.2rem;
@@ -564,11 +531,10 @@
             line-height: 1.8;
             margin-bottom: 1.4rem;
         }
-        /* score picker reused in edit modal */
         .modal-score-row {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.7rem;
             margin-bottom: 1.6rem;
         }
         .modal-actions {
@@ -631,7 +597,7 @@
             color: var(--muted);
             font-family: var(--font-ui);
             text-align: center;
-            padding: 2rem 0;
+            padding: 3rem 0;
             font-size: 0.9rem;
             letter-spacing: 1px;
         }
@@ -657,7 +623,6 @@
             <div class="composer">
                 <input type="text" id="new-title" placeholder="Title" autocomplete="off">
                 <textarea id="new-content" placeholder="Write here champ."></textarea>
-                <!-- score picker -->
                 <div class="score-row">
                     <span class="score-label">Score</span>
                     <div class="score-dots" id="composer-score-dots"></div>
@@ -668,11 +633,8 @@
             </div>
         </div>
 
-        <!-- HORIZONTAL TIMELINE -->
-        <div class="timeline-section">
-            <div class="tl-spine"></div>
-            <div class="tl-track" id="timeline-target"></div>
-        </div>
+        <!-- VERTICAL TIMELINE -->
+        <div class="timeline" id="timeline-target"></div>
     </div>
 
     <!-- ENTRY VIEW MODAL -->
@@ -729,10 +691,10 @@
         const editModal        = document.getElementById('edit-modal');
         const toastEl          = document.getElementById('toast');
 
-        let allEntries = [];
-        let viewingId  = null;
-        let editingId  = null;
-        let toastTimer = null;
+        let allEntries    = [];
+        let viewingId     = null;
+        let editingId     = null;
+        let toastTimer    = null;
         let composerScore = 0;
         let editScore     = 0;
 
@@ -800,7 +762,7 @@
                 const score = e.score || 0;
                 return `
                 <div class="tl-node" data-id="${e.id}" onclick="openEntryModal(${e.id})"
-                     style="animation: dotPop 0.38s cubic-bezier(0.34,1.56,0.64,1) ${i * 55}ms both;">
+                     style="animation: nodeAppear 0.4s cubic-bezier(0.34,1.4,0.64,1) ${i * 60}ms both;">
                     <div class="tl-preview">
                         <div class="tl-preview-score">${score}<span>/9</span></div>
                         <div class="tl-preview-date">${escHTML(e.date)}</div>
@@ -854,7 +816,7 @@
                     showToast('Entry recorded.');
                 } else {
                     const msg = await res.text();
-                    showToast('Failed to save: ' + msg, true);
+                    showToast('Failed: ' + msg, true);
                 }
             } catch { showToast('Network error.', true); }
             btn.textContent = 'Record';
@@ -874,7 +836,6 @@
             document.getElementById('view-title').textContent     = e.title;
             document.getElementById('view-content').textContent   = e.content;
 
-            // build score bar
             const bar = document.getElementById('view-score-bar');
             bar.innerHTML = '';
             for (let i = 1; i <= 9; i++) {
@@ -930,9 +891,6 @@
             editingId = null;
         }
 
-        // legacy alias used by backdrop click
-        function closeModal() { closeEditModal(); }
-
         async function saveEdit() {
             const date    = document.getElementById('edit-date').value.trim();
             const content = document.getElementById('edit-content').value.trim();
@@ -982,9 +940,9 @@
         (function init() {
             const style = document.createElement('style');
             style.textContent = `
-                @keyframes dotPop {
-                    from { opacity:0; transform:scale(0); }
-                    to   { opacity:1; transform:scale(1); }
+                @keyframes nodeAppear {
+                    from { opacity: 0; transform: scale(0.4); }
+                    to   { opacity: 1; transform: scale(1); }
                 }
             `;
             document.head.appendChild(style);
