@@ -13,69 +13,25 @@
     <link rel="manifest" href="/favicon-29/site.webmanifest">
     <link rel="shortcut icon" href="/favicon-29/favicon.ico">
     <style>
-        /* ═══════════════════════════════════════════════
-           LOG-29 COLOR PALETTE
-           ═══════════════════════════════════════════════
-           Surface hierarchy
-           --bg          #14151a   base canvas
-           --surface     #1c1e25   cards, modals
-           --surface-hi  #22252e   elevated / hover
-           --border      rgba(255,255,255,0.07)
-
-           Text
-           --text        #edf0f5   primary — brighter white
-           --text-body   #c8d0db   body copy — readable mid-tone
-           --text-sub    #8b95a8   secondary
-           --text-faint  #4a5260   placeholder / disabled
-
-           Accent
-           --accent      #8b7cf8
-           --accent-dim  rgba(139,124,248,0.12)
-           --accent-glow rgba(139,124,248,0.22)
-
-           Status
-           --danger      #e05252
-           --danger-dim  rgba(224,82,82,0.08)
-
-           Dump
-           --dump-bg     #13141b   slightly deeper than bg
-        ═══════════════════════════════════════════════ */
-
         :root {
-            --bg:           #14151a;
-            --surface:      #1c1e25;
-            --surface-hi:   #22252e;
-            --border:       rgba(255,255,255,0.07);
-
-            --text:         #edf0f5;
-            --text-body:    #c8d0db;
-            --text-sub:     #8b95a8;
-            --text-faint:   #4a5260;
-
-            --accent:       #8b7cf8;
-            --accent-dim:   rgba(139,124,248,0.12);
-            --accent-glow:  rgba(139,124,248,0.22);
-
-            --danger:       #e05252;
-            --danger-dim:   rgba(224,82,82,0.08);
-
-            --dump-bg:      #13141b;
-
-            --font-ui:  'Quicksand', sans-serif;
+            --bg: #1a1c1e;
+            --text: #e2e8f0;
+            --muted: #718096;
+            --accent: #a78bfa;
+            --card: #202327;
+            --font-ui: 'Quicksand', sans-serif;
             --font-ink: 'Kalam', cursive;
-
-            --radius-sm: 10px;
-            --radius-md: 14px;
-            --radius-lg: 18px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             background-color: var(--bg);
+            /* B: radial bloom behind content */
             background-image:
-                radial-gradient(ellipse 80% 55% at 50% 35%, rgba(80,50,160,0.10) 0%, transparent 70%),
-                radial-gradient(ellipse 55% 35% at 50% 85%, rgba(30,50,130,0.06) 0%, transparent 60%);
+                radial-gradient(ellipse 80% 60% at 50% 40%, rgba(80,50,140,0.13) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 50% 80%, rgba(40,60,120,0.08) 0%, transparent 60%);
+            /* A: noise grain overlay via SVG data URI */
             position: relative;
             color: var(--text);
             font-family: var(--font-ui);
@@ -87,18 +43,20 @@
             overflow-x: hidden;
         }
 
+        /* grain layer */
         body::before {
             content: '';
             position: fixed;
             inset: 0;
             pointer-events: none;
             z-index: 0;
-            opacity: 0.025;
+            opacity: 0.028;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
             background-size: 180px 180px;
         }
 
-        #lock-screen, #journal-container, #entry-modal, #edit-modal, #toast, #dump-screen {
+        /* everything above grain */
+        #lock-screen, #journal-container, #entry-modal, #edit-modal, #toast {
             position: relative;
             z-index: 1;
         }
@@ -116,13 +74,13 @@
             font-size: 1.4rem;
             font-weight: 300;
             letter-spacing: 8px;
-            color: var(--text-sub);
+            color: var(--muted);
             margin-bottom: 2.5rem;
         }
         #password-input {
             background: transparent;
             border: none;
-            border-bottom: 1px solid var(--text-sub);
+            border-bottom: 1px solid var(--muted);
             color: var(--text);
             font-family: var(--font-ui);
             font-size: 1.1rem;
@@ -153,24 +111,19 @@
             align-items: center;
             margin-bottom: 3rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
+            border-bottom: 1px solid rgba(113,128,150,0.15);
         }
         header h2 {
             font-size: 1rem;
             font-weight: 400;
             letter-spacing: 5px;
-            color: var(--text-sub);
+            color: var(--muted);
             text-transform: uppercase;
-        }
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
         .add-btn {
             background: transparent;
-            border: 1px solid rgba(139,124,248,0.28);
-            color: var(--text-sub);
+            border: 1px solid rgba(113,128,150,0.4);
+            color: var(--muted);
             font-family: var(--font-ui);
             font-size: 0.8rem;
             font-weight: 600;
@@ -182,22 +135,6 @@
         }
         .add-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-        .dump-btn {
-            background: transparent;
-            border: none;
-            padding: 0.35rem;
-            cursor: pointer;
-            color: var(--text-faint);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            transition: color 0.2s, background 0.2s;
-            line-height: 0;
-        }
-        .dump-btn:hover { color: var(--accent); background: var(--accent-dim); }
-        .dump-btn svg { width: 16px; height: 16px; display: block; }
-
         /* ── COMPOSER ── */
         .composer-wrapper {
             max-height: 0;
@@ -207,12 +144,16 @@
                         opacity 0.3s ease;
             opacity: 0;
         }
-        .composer-wrapper.open { max-height: 2000px; margin-bottom: 3rem; opacity: 1; }
+        .composer-wrapper.open {
+            max-height: 2000px;
+            margin-bottom: 3rem;
+            opacity: 1;
+        }
         .composer {
-            background: var(--surface);
-            border-radius: var(--radius-md);
+            background: var(--card);
+            border-radius: 14px;
             padding: 1.8rem;
-            border: 1px solid var(--border);
+            border: 1px solid rgba(113,128,150,0.1);
         }
         .composer input[type="text"],
         .composer textarea {
@@ -227,7 +168,7 @@
             font-family: var(--font-ui);
             font-size: 1.3rem;
             font-weight: 500;
-            border-bottom: 1px solid rgba(139,124,248,0.15);
+            border-bottom: 1px solid rgba(113,128,150,0.2);
             padding-bottom: 0.6rem;
             margin-bottom: 1.4rem;
         }
@@ -238,33 +179,38 @@
             min-height: 130px;
             line-height: 1.75;
             margin-bottom: 1.4rem;
-            color: var(--text-body);
         }
-        .composer input[type="text"]::placeholder,
-        .composer textarea::placeholder { color: var(--text-faint); }
 
         /* score picker */
-        .score-row { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.4rem; }
+        .score-row {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            margin-bottom: 1.4rem;
+        }
         .score-label {
             font-size: 0.68rem;
             font-weight: 700;
             letter-spacing: 2px;
-            color: var(--text-sub);
+            color: var(--muted);
             text-transform: uppercase;
             white-space: nowrap;
         }
         .score-dots { display: flex; gap: 0.35rem; }
         .score-pip {
-            width: 24px; height: 24px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            border: 1.5px solid rgba(139,124,248,0.25);
+            border: 1.5px solid rgba(113,128,150,0.3);
             background: transparent;
             cursor: pointer;
             font-family: var(--font-ui);
             font-size: 0.65rem;
             font-weight: 700;
-            color: var(--text-sub);
-            display: flex; align-items: center; justify-content: center;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.18s;
             padding: 0;
         }
@@ -273,7 +219,7 @@
             background: var(--accent);
             border-color: var(--accent);
             color: var(--bg);
-            box-shadow: 0 0 8px var(--accent-glow);
+            box-shadow: 0 0 8px rgba(167,139,250,0.45);
         }
 
         .composer-actions { text-align: right; }
@@ -305,17 +251,20 @@
         .timeline::before {
             content: '';
             position: absolute;
-            left: 50%; top: 0; bottom: 0;
+            left: 50%;
+            top: 0;
+            bottom: 0;
             width: 1px;
             transform: translateX(-50%);
             background: linear-gradient(
                 to bottom,
                 transparent 0%,
-                rgba(139,124,248,0.14) 4%,
-                rgba(139,124,248,0.14) 96%,
+                rgba(113,128,150,0.22) 4%,
+                rgba(113,128,150,0.22) 96%,
                 transparent 100%
             );
         }
+
         .tl-node {
             position: relative;
             display: flex;
@@ -326,248 +275,175 @@
             cursor: pointer;
         }
         .tl-node:last-child { margin-bottom: 0; }
+
+        /* dot — color & opacity set by JS */
         .tl-dot {
-            width: 11px; height: 11px;
+            width: 11px;
+            height: 11px;
             border-radius: 50%;
             position: relative;
             z-index: 2;
             flex-shrink: 0;
             transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1),
-                        box-shadow 0.3s ease;
+                        box-shadow 0.3s ease,
+                        opacity 0.3s ease;
         }
-        .tl-node:hover .tl-dot { transform: scale(1.8); }
+        .tl-node:hover .tl-dot {
+            transform: scale(1.8);
+        }
+
+        /* hover preview floats right */
         .tl-preview {
             position: absolute;
             top: 50%;
             left: calc(50% + 22px);
             transform: translateY(-50%) translateX(8px);
-            background: rgba(28,30,37,0.97);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
+            background: rgba(30,33,38,0.96);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 10px;
             padding: 0.6rem 0.9rem;
-            min-width: 155px; max-width: 220px;
+            min-width: 155px;
+            max-width: 220px;
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.2s ease, transform 0.26s cubic-bezier(0.34,1.2,0.64,1);
+            transition: opacity 0.2s ease,
+                        transform 0.26s cubic-bezier(0.34,1.2,0.64,1);
             z-index: 20;
             white-space: nowrap;
             backdrop-filter: blur(8px);
         }
-        .tl-node:hover .tl-preview { opacity: 1; transform: translateY(-50%) translateX(0); }
-        .tl-preview-score { font-size: 1rem; font-weight: 700; margin-bottom: 0.15rem; }
-        .tl-preview-score span { font-size: 0.7rem; color: var(--text-sub); font-weight: 500; }
-        .tl-preview-date {
-            font-size: 0.6rem; font-weight: 700; letter-spacing: 2px;
-            color: var(--text-sub); text-transform: uppercase; margin-bottom: 0.15rem;
+        .tl-node:hover .tl-preview {
+            opacity: 1;
+            transform: translateY(-50%) translateX(0);
         }
-        .tl-preview-title { font-size: 0.85rem; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; }
+        .tl-preview-score {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.15rem;
+            /* color set by JS to match dot */
+        }
+        .tl-preview-score span {
+            font-size: 0.7rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+        .tl-preview-date {
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 0.15rem;
+        }
+        .tl-preview-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
         /* ── ENTRY VIEW MODAL ── */
         #entry-modal {
             display: none;
-            position: fixed; inset: 0;
-            background: rgba(8,9,12,0.82);
+            position: fixed;
+            inset: 0;
+            background: rgba(8,9,11,0.82);
             z-index: 50;
-            align-items: center; justify-content: center;
+            align-items: center;
+            justify-content: center;
             padding: 2rem;
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
         }
-        #entry-modal.open { display: flex; animation: fadein 0.25s ease forwards; }
+        #entry-modal.open {
+            display: flex;
+            animation: fadein 0.25s ease forwards;
+        }
         @keyframes fadein { from { opacity:0; } to { opacity:1; } }
         @keyframes slideup {
             from { transform: translateY(22px); opacity:0; }
             to   { transform: translateY(0);    opacity:1; }
         }
         .entry-modal-box {
-            background: var(--surface);
-            border-radius: var(--radius-lg);
+            background: #1e2124;
+            border-radius: 18px;
             padding: 2.2rem 2.4rem;
-            width: 100%; max-width: 600px; max-height: 85vh;
+            width: 100%;
+            max-width: 600px;
+            max-height: 85vh;
             overflow-y: auto;
-            border: 1px solid var(--border);
+            border: 1px solid rgba(113,128,150,0.12);
             scrollbar-width: thin;
-            scrollbar-color: rgba(139,124,248,0.2) transparent;
+            scrollbar-color: rgba(113,128,150,0.2) transparent;
             animation: slideup 0.32s cubic-bezier(0.34,1.2,0.64,1) forwards;
         }
-        .view-score-badge { display: inline-flex; align-items: baseline; gap: 2px; margin-bottom: 0.6rem; }
-        .view-score-number { font-size: 2.4rem; font-weight: 700; line-height: 1; }
-        .view-score-denom { font-size: 1rem; color: var(--text-sub); font-weight: 500; }
-        .view-score-bar { display: flex; gap: 4px; margin-bottom: 1.4rem; }
-        .view-score-bar-pip { height: 3px; flex: 1; border-radius: 2px; background: rgba(139,124,248,0.12); }
-        .view-date { font-size: 0.68rem; font-weight: 700; letter-spacing: 3px; color: var(--text-sub); text-transform: uppercase; margin-bottom: 0.35rem; }
-        .view-title { font-size: 1.5rem; font-weight: 600; color: var(--text); margin-bottom: 1.4rem; line-height: 1.3; }
+
+        /* score badge — color set by JS */
+        .view-score-badge {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 2px;
+            margin-bottom: 0.6rem;
+        }
+        .view-score-number {
+            font-size: 2.4rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .view-score-denom {
+            font-size: 1rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+        .view-score-bar {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 1.4rem;
+        }
+        .view-score-bar-pip {
+            height: 3px;
+            flex: 1;
+            border-radius: 2px;
+            background: rgba(113,128,150,0.18);
+        }
+        .view-score-bar-pip.filled { /* background set by JS */ }
+
+        .view-date {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 0.35rem;
+        }
+        .view-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 1.4rem;
+            line-height: 1.3;
+        }
         .view-content {
             font-family: var(--font-ink);
             font-size: 1.2rem;
-            color: var(--text-body);
+            color: #b0b9c1;
             white-space: pre-line;
             line-height: 1.9;
             margin-bottom: 2rem;
         }
-        .view-actions { display: flex; justify-content: flex-end; gap: 0.6rem; padding-top: 1.2rem; border-top: 1px solid var(--border); }
+        .view-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.6rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid rgba(113,128,150,0.1);
+        }
         .view-close-btn {
             margin-right: auto;
             background: transparent;
-            border: 1px solid rgba(139,124,248,0.18);
-            color: var(--text-sub);
-            font-family: var(--font-ui);
-            font-size: 0.72rem; font-weight: 600; letter-spacing: 1px;
-            padding: 0.3rem 1rem; border-radius: 20px; cursor: pointer;
-            text-transform: uppercase; transition: all 0.2s;
-        }
-        .view-close-btn:hover { border-color: var(--text-sub); color: var(--text); }
-        .entry-edit-btn, .entry-delete-btn {
-            background: transparent; font-family: var(--font-ui);
-            font-size: 0.72rem; font-weight: 600; letter-spacing: 1px;
-            padding: 0.3rem 1rem; border-radius: 20px; cursor: pointer;
-            transition: all 0.2s; text-transform: uppercase;
-        }
-        .entry-edit-btn { border: 1px solid rgba(139,124,248,0.35); color: var(--accent); }
-        .entry-edit-btn:hover { background: var(--accent-dim); }
-        .entry-delete-btn { border: 1px solid rgba(224,82,82,0.28); color: var(--danger); }
-        .entry-delete-btn:hover { background: var(--danger-dim); }
-
-        /* ── EDIT MODAL ── */
-        #edit-modal {
-            display: none;
-            position: fixed; inset: 0;
-            background: rgba(8,9,12,0.85);
-            z-index: 100;
-            align-items: center; justify-content: center;
-            padding: 2rem;
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-        }
-        #edit-modal.open { display: flex; animation: fadein 0.22s ease forwards; }
-        .modal-box {
-            background: var(--surface-hi);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            width: 100%; max-width: 560px; max-height: 90vh;
-            overflow-y: auto;
-            border: 1px solid var(--border);
-            animation: slideup 0.28s cubic-bezier(0.34,1.2,0.64,1) forwards;
-        }
-        .modal-entry-title { font-size: 1.2rem; font-weight: 500; color: var(--accent); margin-bottom: 1.5rem; }
-        .modal-label { font-size: 0.68rem; font-weight: 700; letter-spacing: 2px; color: var(--text-sub); text-transform: uppercase; margin-bottom: 0.4rem; }
-        #edit-date {
-            width: 100%; background: transparent; border: none;
-            border-bottom: 1px solid rgba(139,124,248,0.18);
-            color: var(--text); font-family: var(--font-ui); font-size: 0.95rem;
-            padding: 0.4rem 0; outline: none; margin-bottom: 1.4rem; letter-spacing: 1px;
-        }
-        #edit-content {
-            width: 100%;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-body);
-            font-family: var(--font-ink);
-            font-size: 1.2rem;
-            padding: 0.8rem 1rem;
-            outline: none; resize: vertical;
-            min-height: 160px; line-height: 1.8;
-            margin-bottom: 1.4rem;
-        }
-        .modal-score-row { display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1.6rem; }
-        .modal-actions { display: flex; justify-content: flex-end; gap: 0.7rem; }
-        .modal-cancel-btn {
-            background: transparent;
-            border: 1px solid rgba(139,124,248,0.2);
-            color: var(--text-sub); font-family: var(--font-ui);
-            font-size: 0.82rem; font-weight: 600;
-            padding: 0.5rem 1.4rem; border-radius: 20px; cursor: pointer; transition: all 0.2s;
-        }
-        .modal-cancel-btn:hover { border-color: var(--text-sub); color: var(--text); }
-        .modal-save-btn {
-            background: var(--accent); color: var(--bg); border: none;
-            font-family: var(--font-ui); font-size: 0.82rem; font-weight: 700;
-            letter-spacing: 1px; padding: 0.5rem 1.6rem; border-radius: 20px;
-            cursor: pointer; transition: opacity 0.2s;
-        }
-        .modal-save-btn:hover { opacity: 0.8; }
-
-        /* ── TOAST ── */
-        #toast {
-            position: fixed;
-            bottom: 2rem; left: 50%;
-            transform: translateX(-50%) translateY(10px);
-            background: var(--surface-hi);
-            color: var(--text);
-            font-family: var(--font-ui); font-size: 0.8rem; font-weight: 500;
-            padding: 0.55rem 1.4rem; border-radius: 20px;
-            border: 1px solid var(--border);
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.28s ease, transform 0.28s ease;
-            z-index: 200; white-space: nowrap;
-        }
-        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-        #toast.error { border-color: rgba(224,82,82,0.28); color: var(--danger); }
-
-        .empty-state {
-            color: var(--text-sub); font-family: var(--font-ui);
-            text-align: center; padding: 3rem 0;
-            font-size: 0.9rem; letter-spacing: 1px;
-        }
-
-        /* ════════════════════════════════════════════════
-           DUMP SCREEN — fullscreen overlay
-        ════════════════════════════════════════════════ */
-        #dump-screen {
-            position: fixed;
-            inset: 0;
-            background: var(--dump-bg);
-            z-index: 400;
-            display: flex;
-            flex-direction: column;
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(18px);
-            transition: opacity 0.3s cubic-bezier(0.4,0,0.2,1),
-                        transform 0.3s cubic-bezier(0.34,1.1,0.64,1);
-        }
-        #dump-screen.open {
-            opacity: 1;
-            pointer-events: all;
-            transform: translateY(0);
-        }
-
-        /* top bar */
-        .dump-topbar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1.1rem 2rem;
-            border-bottom: 1px solid var(--border);
-            flex-shrink: 0;
-        }
-        .dump-topbar-left {
-            display: flex;
-            align-items: center;
-            gap: 0.9rem;
-        }
-        .dump-screen-title {
-            font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: var(--text-sub);
-        }
-        .dump-count-badge {
-            font-size: 0.65rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            color: var(--text-faint);
-            background: rgba(139,124,248,0.08);
-            border: 1px solid rgba(139,124,248,0.14);
-            padding: 0.18rem 0.6rem;
-            border-radius: 20px;
-        }
-        .dump-topbar-close {
-            background: transparent;
-            border: 1px solid rgba(139,124,248,0.18);
-            color: var(--text-sub);
+            border: 1px solid rgba(113,128,150,0.25);
+            color: var(--muted);
             font-family: var(--font-ui);
             font-size: 0.72rem;
             font-weight: 600;
@@ -578,192 +454,164 @@
             text-transform: uppercase;
             transition: all 0.2s;
         }
-        .dump-topbar-close:hover { border-color: var(--text-sub); color: var(--text); }
-
-        /* body: compose area left, cards right */
-        .dump-body {
-            flex: 1;
-            display: flex;
-            overflow: hidden;
-        }
-
-        /* left compose pane */
-        .dump-compose {
-            width: 320px;
-            flex-shrink: 0;
-            border-right: 1px solid var(--border);
-            display: flex;
-            flex-direction: column;
-            padding: 1.6rem 1.5rem;
-            gap: 0;
-        }
-        .dump-compose-label {
-            font-size: 0.62rem;
-            font-weight: 700;
-            letter-spacing: 2.5px;
-            text-transform: uppercase;
-            color: var(--text-faint);
-            margin-bottom: 0.9rem;
-        }
-        .dump-title-input {
+        .view-close-btn:hover { border-color: var(--muted); color: var(--text); }
+        .entry-edit-btn, .entry-delete-btn {
             background: transparent;
-            border: none;
-            outline: none;
             font-family: var(--font-ui);
-            font-size: 0.85rem;
+            font-size: 0.72rem;
             font-weight: 600;
-            letter-spacing: 0.5px;
-            color: var(--text-sub);
-            width: 100%;
-            caret-color: var(--accent);
-            margin-bottom: 0.9rem;
-            border-bottom: 1px solid transparent;
-            padding-bottom: 0.4rem;
-            transition: border-color 0.2s, color 0.2s;
+            letter-spacing: 1px;
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
         }
-        .dump-title-input::placeholder { color: var(--text-faint); }
-        .dump-title-input:focus { border-color: rgba(139,124,248,0.2); color: var(--text); }
+        .entry-edit-btn { border: 1px solid rgba(167,139,250,0.4); color: var(--accent); }
+        .entry-edit-btn:hover { background: rgba(167,139,250,0.1); }
+        .entry-delete-btn { border: 1px solid rgba(239,68,68,0.3); color: #ef4444; }
+        .entry-delete-btn:hover { background: rgba(239,68,68,0.08); }
 
-        .dump-compose-textarea {
-            flex: 1;
+        /* ── EDIT MODAL ── */
+        #edit-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(8,9,11,0.85);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        #edit-modal.open {
+            display: flex;
+            animation: fadein 0.22s ease forwards;
+        }
+        .modal-box {
+            background: #22262b;
+            border-radius: 16px;
+            padding: 2rem;
+            width: 100%;
+            max-width: 560px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid rgba(113,128,150,0.15);
+            animation: slideup 0.28s cubic-bezier(0.34,1.2,0.64,1) forwards;
+        }
+        .modal-entry-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+        }
+        .modal-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 0.4rem;
+        }
+        #edit-date {
             width: 100%;
             background: transparent;
             border: none;
+            border-bottom: 1px solid rgba(113,128,150,0.25);
+            color: var(--text);
+            font-family: var(--font-ui);
+            font-size: 0.95rem;
+            padding: 0.4rem 0;
             outline: none;
-            resize: none;
-            font-family: var(--font-ink);
-            font-size: 1.15rem;
-            color: var(--text-body);
-            line-height: 1.85;
-            caret-color: var(--accent);
-            min-height: 0;
+            margin-bottom: 1.4rem;
+            letter-spacing: 1px;
         }
-        .dump-compose-textarea::placeholder { color: var(--text-faint); }
-
-        .dump-compose-footer {
+        #edit-content {
+            width: 100%;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(113,128,150,0.15);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: var(--font-ink);
+            font-size: 1.2rem;
+            padding: 0.8rem 1rem;
+            outline: none;
+            resize: vertical;
+            min-height: 160px;
+            line-height: 1.8;
+            margin-bottom: 1.4rem;
+        }
+        .modal-score-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            padding-top: 1rem;
-            margin-top: 1rem;
-            border-top: 1px solid var(--border);
-            flex-shrink: 0;
+            gap: 0.7rem;
+            margin-bottom: 1.6rem;
         }
-        .dump-save-btn {
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.7rem;
+        }
+        .modal-cancel-btn {
+            background: transparent;
+            border: 1px solid rgba(113,128,150,0.3);
+            color: var(--muted);
+            font-family: var(--font-ui);
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 0.5rem 1.4rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .modal-cancel-btn:hover { border-color: var(--muted); color: var(--text); }
+        .modal-save-btn {
             background: var(--accent);
             color: var(--bg);
             border: none;
             font-family: var(--font-ui);
-            font-size: 0.78rem;
+            font-size: 0.82rem;
             font-weight: 700;
             letter-spacing: 1px;
-            padding: 0.42rem 1.2rem;
+            padding: 0.5rem 1.6rem;
             border-radius: 20px;
             cursor: pointer;
-            transition: opacity 0.2s, transform 0.15s;
+            transition: opacity 0.2s;
         }
-        .dump-save-btn:hover { opacity: 0.85; transform: translateY(-1px); }
-        .dump-save-btn:active { transform: translateY(0); }
-        .dump-autosave-hint {
-            font-size: 0.65rem;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--text-faint);
-            transition: color 0.3s;
-        }
-        .dump-autosave-hint.saved { color: var(--accent); }
+        .modal-save-btn:hover { opacity: 0.8; }
 
-        /* right grid pane */
-        .dump-grid-pane {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1.6rem 2rem;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(139,124,248,0.15) transparent;
-        }
-        .dump-grid {
-            columns: 2 280px;
-            column-gap: 1rem;
-        }
-        .dump-empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            min-height: 200px;
-            color: var(--text-faint);
-            font-size: 0.82rem;
-            letter-spacing: 1px;
-            text-align: center;
-            gap: 0.5rem;
-        }
-        .dump-empty-state svg { opacity: 0.25; margin-bottom: 0.3rem; }
-
-        /* dump cards */
-        .dump-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-md);
-            padding: 1rem 1.1rem;
-            margin-bottom: 1rem;
-            break-inside: avoid;
-            display: flex;
-            flex-direction: column;
-            gap: 0.4rem;
-            cursor: default;
-            transition: border-color 0.2s, background 0.2s;
-            position: relative;
-        }
-        .dump-card:hover { border-color: rgba(139,124,248,0.22); background: var(--surface-hi); }
-        .dump-card:hover .dump-card-delete { opacity: 1; }
-
-        .dump-card-timestamp {
-            font-size: 0.6rem;
-            font-weight: 700;
-            letter-spacing: 1.8px;
-            text-transform: uppercase;
-            color: var(--text-faint);
-        }
-        .dump-card-title {
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: var(--text-sub);
-            letter-spacing: 0.3px;
-        }
-        .dump-card-body {
-            font-family: var(--font-ink);
-            font-size: 1.05rem;
-            color: var(--text-body);
-            line-height: 1.75;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-        .dump-card-delete {
-            position: absolute;
-            top: 0.55rem;
-            right: 0.7rem;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            color: var(--text-faint);
-            padding: 0.15rem;
-            border-radius: 4px;
-            line-height: 0;
+        /* ── TOAST ── */
+        #toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: #2d3139;
+            color: var(--text);
+            font-family: var(--font-ui);
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 0.55rem 1.4rem;
+            border-radius: 20px;
+            border: 1px solid rgba(113,128,150,0.15);
             opacity: 0;
-            transition: color 0.2s, opacity 0.2s;
+            pointer-events: none;
+            transition: opacity 0.28s ease, transform 0.28s ease;
+            z-index: 200;
+            white-space: nowrap;
         }
-        .dump-card-delete:hover { color: var(--danger); }
-        .dump-card-delete svg { width: 12px; height: 12px; }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        #toast.error { border-color: rgba(239,68,68,0.3); color: #ef4444; }
 
-        /* entry animation for new cards */
-        @keyframes cardIn {
-            from { opacity: 0; transform: translateY(8px) scale(0.98); }
-            to   { opacity: 1; transform: translateY(0) scale(1); }
+        .empty-state {
+            color: var(--muted);
+            font-family: var(--font-ui);
+            text-align: center;
+            padding: 3rem 0;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
         }
-        .dump-card.new-card { animation: cardIn 0.3s cubic-bezier(0.34,1.2,0.64,1) forwards; }
-
     </style>
 </head>
 <body>
@@ -776,17 +624,7 @@
     <div id="journal-container">
         <header>
             <h2>The Log</h2>
-            <div class="header-actions">
-                <button class="dump-btn" onclick="openDumpScreen()" title="Thought dump" aria-label="Open thought dump">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4.5 10.5A5.5 5.5 0 0 1 15 6.07 4 4 0 1 1 19 14H6a3.5 3.5 0 0 1-1.5-6.67"/>
-                        <line x1="9" y1="17" x2="9" y2="14"/>
-                        <line x1="12" y1="19" x2="12" y2="14"/>
-                        <line x1="15" y1="17" x2="15" y2="14"/>
-                    </svg>
-                </button>
-                <button class="add-btn" onclick="toggleComposer()">+ Add Entry</button>
-            </div>
+            <button class="add-btn" onclick="toggleComposer()">+ Add Entry</button>
         </header>
 
         <div class="composer-wrapper" id="composer-panel">
@@ -844,74 +682,40 @@
 
     <div id="toast"></div>
 
-    <!-- ════ DUMP SCREEN ════ -->
-    <div id="dump-screen">
-        <div class="dump-topbar">
-            <div class="dump-topbar-left">
-                <span class="dump-screen-title">Thought Dump</span>
-                <span class="dump-count-badge" id="dump-count-badge">0 dumps</span>
-            </div>
-            <button class="dump-topbar-close" onclick="closeDumpScreen()">← Back</button>
-        </div>
-        <div class="dump-body">
-            <!-- compose pane -->
-            <div class="dump-compose">
-                <span class="dump-compose-label">New dump</span>
-                <input type="text" class="dump-title-input" id="dump-new-title"
-                       placeholder="title (optional)" maxlength="80" autocomplete="off">
-                <textarea class="dump-compose-textarea" id="dump-new-body"
-                          placeholder="whatever's in your head..."></textarea>
-                <div class="dump-compose-footer">
-                    <span class="dump-autosave-hint" id="dump-autosave-hint">draft</span>
-                    <button class="dump-save-btn" onclick="commitDump()">Dump it</button>
-                </div>
-            </div>
-            <!-- cards grid -->
-            <div class="dump-grid-pane" id="dump-grid-pane">
-                <div class="dump-grid" id="dump-grid"></div>
-                <div class="dump-empty-state" id="dump-empty-state" style="display:none;">
-                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
-                        <path d="M4.5 10.5A5.5 5.5 0 0 1 15 6.07 4 4 0 1 1 19 14H6a3.5 3.5 0 0 1-1.5-6.67"/>
-                        <line x1="9" y1="17" x2="9" y2="14"/>
-                        <line x1="12" y1="19" x2="12" y2="14"/>
-                        <line x1="15" y1="17" x2="15" y2="14"/>
-                    </svg>
-                    <span>no dumps yet</span>
-                    <span style="color:var(--text-faint);font-size:0.72rem;">write something on the left</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         const PASSWORD_ENABLED = true;
         const JOURNAL_PASSWORD = "29";
 
-        /* ── MONTH COLORS ── */
+        // ── MONTH COLORS (RGB only, opacity applied via score) ──
         const MONTH_COLORS = {
-             1: '96,165,250',
-             2: '244,114,182',
-             3: '52,211,153',
-             4: '251,191,36',
-             5: '139,124,248',
-             6: '251,146,60',
-             7: '232,121,249',
-             8: '45,212,191',
-             9: '248,113,113',
-            10: '163,230,53',
-            11: '148,163,184',
-            12: '103,232,249',
+             1: '96,165,250',   // Jan — cool blue
+             2: '244,114,182',  // Feb — soft pink
+             3: '52,211,153',   // Mar — fresh green
+             4: '251,191,36',   // Apr — amber
+             5: '167,139,250',  // May — purple (unchanged)
+             6: '251,146,60',   // Jun — burnt orange
+             7: '232,121,249',  // Jul — magenta
+             8: '45,212,191',   // Aug — teal
+             9: '248,113,113',  // Sep — muted red
+            10: '163,230,53',   // Oct — lime
+            11: '148,163,184',  // Nov — cool grey
+            12: '103,232,249',  // Dec — icy cyan
         };
 
+        // score 0–9 → opacity 0.2 to 1.0
         function scoreOpacity(score) {
             const s = Math.max(0, Math.min(9, score || 0));
             return 0.2 + (s / 9) * 0.8;
         }
+
+        // score 0–9 → glow spread scale
         function scoreGlow(score) {
             const s = Math.max(0, Math.min(9, score || 0));
             return s / 9;
         }
+
         function monthFromDateStr(dateStr) {
+            // dateStr e.g. "MAY 29, 2026" or "JANUARY 3, 2026"
             const months = {
                 JANUARY:1, FEBRUARY:2, MARCH:3, APRIL:4, MAY:5, JUNE:6,
                 JULY:7, AUGUST:8, SEPTEMBER:9, OCTOBER:10, NOVEMBER:11, DECEMBER:12
@@ -919,12 +723,14 @@
             const first = (dateStr || '').trim().toUpperCase().split(' ')[0];
             return months[first] || 5;
         }
+
         function dotColor(dateStr, score) {
             const month = monthFromDateStr(dateStr);
             const rgb   = MONTH_COLORS[month] || MONTH_COLORS[5];
             const alpha = scoreOpacity(score);
             return { rgb, alpha, css: `rgba(${rgb}, ${alpha})` };
         }
+
         function dotGlowStyle(dateStr, score) {
             const { rgb, alpha } = dotColor(dateStr, score);
             const g = scoreGlow(score);
@@ -933,7 +739,8 @@
             return `0 0 0 ${Math.round(outer)}px rgba(${rgb},${Math.round(alpha * g * 0.18 * 100)/100}), 0 0 ${Math.round(spread)}px rgba(${rgb},${Math.round(alpha * g * 0.55 * 100)/100})`;
         }
 
-        /* ── DOM refs ── */
+        // ─────────────────────────────────────────────────
+
         const lockScreen       = document.getElementById('lock-screen');
         const passwordInput    = document.getElementById('password-input');
         const journalContainer = document.getElementById('journal-container');
@@ -942,13 +749,6 @@
         const entryModal       = document.getElementById('entry-modal');
         const editModal        = document.getElementById('edit-modal');
         const toastEl          = document.getElementById('toast');
-        const dumpScreen       = document.getElementById('dump-screen');
-        const dumpGrid         = document.getElementById('dump-grid');
-        const dumpEmptyState   = document.getElementById('dump-empty-state');
-        const dumpCountBadge   = document.getElementById('dump-count-badge');
-        const dumpNewTitle     = document.getElementById('dump-new-title');
-        const dumpNewBody      = document.getElementById('dump-new-body');
-        const dumpAutosaveHint = document.getElementById('dump-autosave-hint');
 
         let allEntries    = [];
         let viewingId     = null;
@@ -957,7 +757,8 @@
         let composerScore = 0;
         let editScore     = 0;
 
-        /* ── SCORE PIPS ── */
+        // ── SCORE PIPS ────────────────────────────────────
+
         function buildScorePips(containerId, onSelect) {
             const container = document.getElementById(containerId);
             container.innerHTML = '';
@@ -971,12 +772,14 @@
                 container.appendChild(pip);
             }
         }
+
         function setComposerScore(val) {
             composerScore = val;
             document.querySelectorAll('#composer-score-dots .score-pip').forEach(p => {
                 p.classList.toggle('selected', parseInt(p.dataset.val) === val);
             });
         }
+
         function setEditScore(val) {
             editScore = val;
             document.querySelectorAll('#edit-score-dots .score-pip').forEach(p => {
@@ -984,7 +787,8 @@
             });
         }
 
-        /* ── TOAST ── */
+        // ── TOAST ─────────────────────────────────────────
+
         function showToast(msg, isError = false) {
             clearTimeout(toastTimer);
             toastEl.textContent = msg;
@@ -994,7 +798,8 @@
             toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2800);
         }
 
-        /* ── DATA ── */
+        // ── DATA ──────────────────────────────────────────
+
         async function loadTimeline() {
             try {
                 const res = await fetch('/api/entries');
@@ -1005,15 +810,17 @@
                 timelineTarget.innerHTML = '<div class="empty-state">Could not connect to database.</div>';
             }
         }
+
         function renderTimeline(entries) {
             if (!entries.length) {
                 timelineTarget.innerHTML = '<div class="empty-state">No entries yet. The page is blank.</div>';
                 return;
             }
+
             timelineTarget.innerHTML = entries.map((e, i) => {
-                const score = e.score || 0;
-                const color = dotColor(e.date, score);
-                const glow  = dotGlowStyle(e.date, score);
+                const score   = e.score || 0;
+                const color   = dotColor(e.date, score);
+                const glow    = dotGlowStyle(e.date, score);
                 return `
                 <div class="tl-node" data-id="${e.id}" onclick="openEntryModal(${e.id})"
                      style="animation: nodeAppear 0.4s cubic-bezier(0.34,1.4,0.64,1) ${i * 60}ms both;"
@@ -1024,37 +831,47 @@
                         <div class="tl-preview-date">${escHTML(e.date)}</div>
                         <div class="tl-preview-title">${escHTML(e.title)}</div>
                     </div>
-                    <div class="tl-dot" style="background:${color.css};"></div>
+                    <div class="tl-dot"
+                         style="background:${color.css};">
+                    </div>
                 </div>`;
             }).join('');
         }
+
         function escHTML(str) {
             return String(str)
-                .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
         }
+
         function getFormattedDate() {
             return new Date().toLocaleDateString('en-US', {
                 year: 'numeric', month: 'long', day: 'numeric'
             }).toUpperCase();
         }
+
         async function addEntry() {
             const titleEl   = document.getElementById('new-title');
             const contentEl = document.getElementById('new-content');
             const btn       = document.getElementById('record-btn');
             if (!titleEl.value.trim() || !contentEl.value.trim()) return;
+
             const payload = {
-                date: getFormattedDate(),
-                title: titleEl.value.trim(),
+                date:    getFormattedDate(),
+                title:   titleEl.value.trim(),
                 content: contentEl.value.trim(),
-                score: composerScore
+                score:   composerScore
             };
+
             btn.textContent = 'Saving…';
             btn.disabled = true;
             try {
                 const res = await fetch('/api/entries', {
-                    method: 'POST',
+                    method:  'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    body:    JSON.stringify(payload)
                 });
                 if (res.ok) {
                     titleEl.value = contentEl.value = '';
@@ -1071,19 +888,26 @@
             btn.disabled = false;
         }
 
-        /* ── ENTRY VIEW MODAL ── */
+        // ── ENTRY VIEW MODAL ──────────────────────────────
+
         function openEntryModal(id) {
             const e = allEntries.find(x => x.id === id);
             if (!e) return;
             viewingId = id;
+
             const score = e.score || 0;
             const color = dotColor(e.date, score);
+
+            // score badge
             const numEl = document.getElementById('view-score-num');
             numEl.textContent = score;
             numEl.style.color = color.css;
+
             document.getElementById('view-date').textContent    = e.date;
             document.getElementById('view-title').textContent   = e.title;
             document.getElementById('view-content').textContent = e.content;
+
+            // score bar
             const bar = document.getElementById('view-score-bar');
             bar.innerHTML = '';
             for (let i = 1; i <= 9; i++) {
@@ -1092,15 +916,22 @@
                 if (i <= score) pip.style.background = color.css;
                 bar.appendChild(pip);
             }
+
             entryModal.classList.add('open');
         }
-        function closeEntryModal() { entryModal.classList.remove('open'); viewingId = null; }
+
+        function closeEntryModal() {
+            entryModal.classList.remove('open');
+            viewingId = null;
+        }
+
         function openEditFromView() {
             if (!viewingId) return;
             const id = viewingId;
             closeEntryModal();
             setTimeout(() => openEditModal(id), 80);
         }
+
         async function deleteFromView() {
             if (!viewingId) return;
             const id = viewingId;
@@ -1115,7 +946,8 @@
             } catch { showToast('Network error.', true); }
         }
 
-        /* ── EDIT MODAL ── */
+        // ── EDIT MODAL ────────────────────────────────────
+
         function openEditModal(id) {
             const e = allEntries.find(x => x.id === id);
             if (!e) return;
@@ -1126,16 +958,22 @@
             setEditScore(e.score || 0);
             editModal.classList.add('open');
         }
-        function closeEditModal() { editModal.classList.remove('open'); editingId = null; }
+
+        function closeEditModal() {
+            editModal.classList.remove('open');
+            editingId = null;
+        }
+
         async function saveEdit() {
             const date    = document.getElementById('edit-date').value.trim();
             const content = document.getElementById('edit-content').value.trim();
             if (!date || !content || !editingId) return;
+
             try {
                 const res = await fetch('/api/entries/' + editingId, {
-                    method: 'PUT',
+                    method:  'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ date, content, score: editScore })
+                    body:    JSON.stringify({ date, content, score: editScore })
                 });
                 if (res.ok) {
                     closeEditModal();
@@ -1151,8 +989,12 @@
         entryModal.addEventListener('click', e => { if (e.target === entryModal) closeEntryModal(); });
         editModal.addEventListener('click',  e => { if (e.target === editModal)  closeEditModal(); });
 
-        /* ── UI ── */
-        function toggleComposer() { composerPanel.classList.toggle('open'); }
+        // ── UI ────────────────────────────────────────────
+
+        function toggleComposer() {
+            composerPanel.classList.toggle('open');
+        }
+
         function revealJournal() {
             lockScreen.style.opacity = '0';
             setTimeout(() => {
@@ -1166,216 +1008,8 @@
             }, 500);
         }
 
-        /* ════════════════════════════════════════════════
-           DUMP SYSTEM — DB-backed
-           All dumps live in the D1 `dumps` table.
-           Draft-while-typing stays in localStorage only
-           until "Dump it" is clicked, then it hits /api/dumps.
-        ════════════════════════════════════════════════ */
-        let dumps        = [];
-        let dumpDraftTimer = null;
+        // ── BOOT ─────────────────────────────────────────
 
-        function formatDumpTimestamp(ts) {
-            const d = new Date(ts);
-            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase()
-                + ' · '
-                + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-        }
-
-        async function openDumpScreen() {
-            dumpScreen.classList.add('open');
-            dumpGrid.innerHTML = '';
-            dumpEmptyState.style.display = 'none';
-            dumpCountBadge.textContent = '…';
-            // restore in-progress draft
-            try {
-                const draft = JSON.parse(localStorage.getItem('log29_dump_draft') || 'null');
-                if (draft) { dumpNewTitle.value = draft.title || ''; dumpNewBody.value = draft.body || ''; }
-            } catch {}
-            requestAnimationFrame(() => requestAnimationFrame(() => dumpNewBody.focus()));
-            await loadDumps();
-        }
-
-        function closeDumpScreen() {
-            dumpScreen.classList.remove('open');
-        }
-
-        async function loadDumps() {
-            try {
-                const res = await fetch('/api/dumps');
-                if (!res.ok) throw new Error(await res.text());
-                dumps = await res.json();
-                renderDumpGrid();
-            } catch (err) {
-                dumpGrid.innerHTML = `<div class="empty-state" style="padding:2rem">Could not load dumps.</div>`;
-                dumpCountBadge.textContent = 'error';
-            }
-        }
-
-        async function commitDump() {
-            const body = dumpNewBody.value.trim();
-            if (!body) return;
-            const payload = { title: dumpNewTitle.value.trim(), body };
-
-            const btn = document.querySelector('.dump-save-btn');
-            btn.textContent = '…';
-            btn.disabled = true;
-
-            try {
-                const res = await fetch('/api/dumps', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                if (!res.ok) throw new Error(await res.text());
-                const saved = await res.json(); // { id, title, body, created_at }
-                dumpNewTitle.value = '';
-                dumpNewBody.value  = '';
-                clearDumpDraft();
-                flashDumpHint('dumped ✓');
-                prependDumpCard(saved, true);
-                dumps.unshift(saved);
-                updateDumpCount();
-            } catch (err) {
-                showToast('Could not save dump: ' + err.message, true);
-            }
-
-            btn.textContent = 'Dump it';
-            btn.disabled = false;
-        }
-
-        async function deleteDump(id) {
-            try {
-                const res = await fetch('/api/dumps/' + id, { method: 'DELETE' });
-                if (!res.ok) throw new Error(await res.text());
-                dumps = dumps.filter(d => d.id !== id);
-                const card = dumpGrid.querySelector(`[data-dump-id="${id}"]`);
-                if (card) {
-                    card.style.transition = 'opacity 0.2s, transform 0.2s';
-                    card.style.opacity = '0';
-                    card.style.transform = 'scale(0.95)';
-                    setTimeout(() => { card.remove(); updateDumpEmptyState(); updateDumpCount(); }, 220);
-                }
-            } catch (err) {
-                showToast('Delete failed: ' + err.message, true);
-            }
-        }
-
-        function renderDumpGrid() {
-            dumpGrid.innerHTML = '';
-            if (!dumps.length) { updateDumpEmptyState(); updateDumpCount(); return; }
-            dumps.forEach(d => appendDumpCard(d, false));
-            updateDumpEmptyState();
-            updateDumpCount();
-        }
-
-        function buildCardEl(d, animate) {
-            const card = document.createElement('div');
-            card.className = 'dump-card' + (animate ? ' new-card' : '');
-            card.dataset.dumpId = d.id;
-
-            const ts = document.createElement('div');
-            ts.className = 'dump-card-timestamp';
-            // created_at comes from DB as ISO string; ts field from optimistic local adds
-            ts.textContent = formatDumpTimestamp(d.created_at ? new Date(d.created_at).getTime() : d.ts);
-            card.appendChild(ts);
-
-            if (d.title) {
-                const t = document.createElement('div');
-                t.className = 'dump-card-title';
-                t.textContent = d.title;
-                card.appendChild(t);
-            }
-
-            const b = document.createElement('div');
-            b.className = 'dump-card-body';
-            b.textContent = d.body;
-            card.appendChild(b);
-
-            const del = document.createElement('button');
-            del.className = 'dump-card-delete';
-            del.title = 'Delete';
-            del.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
-            del.addEventListener('click', () => deleteDump(d.id));
-            card.appendChild(del);
-            return card;
-        }
-
-        function appendDumpCard(d, animate) {
-            dumpGrid.appendChild(buildCardEl(d, animate));
-            updateDumpEmptyState();
-        }
-
-        function prependDumpCard(d, animate) {
-            dumpGrid.insertBefore(buildCardEl(d, animate), dumpGrid.firstChild);
-            updateDumpEmptyState();
-            document.getElementById('dump-grid-pane').scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function updateDumpEmptyState() {
-            dumpEmptyState.style.display = dumpGrid.children.length ? 'none' : 'flex';
-        }
-
-        function updateDumpCount() {
-            const n = dumps.length;
-            dumpCountBadge.textContent = n === 1 ? '1 dump' : `${n} dumps`;
-        }
-
-        /* draft autosave to localStorage only (not committed until "Dump it") */
-        function scheduleDraftSave() {
-            clearTimeout(dumpDraftTimer);
-            dumpAutosaveHint.classList.remove('saved');
-            dumpAutosaveHint.textContent = 'draft';
-            dumpDraftTimer = setTimeout(() => {
-                const body = dumpNewBody.value;
-                if (body.trim()) {
-                    try {
-                        localStorage.setItem('log29_dump_draft', JSON.stringify({
-                            title: dumpNewTitle.value, body
-                        }));
-                    } catch {}
-                    dumpAutosaveHint.textContent = 'saved locally';
-                    dumpAutosaveHint.classList.add('saved');
-                    setTimeout(() => {
-                        dumpAutosaveHint.textContent = 'draft';
-                        dumpAutosaveHint.classList.remove('saved');
-                    }, 1500);
-                }
-            }, 700);
-        }
-
-        function clearDumpDraft() {
-            try { localStorage.removeItem('log29_dump_draft'); } catch {}
-        }
-
-        function flashDumpHint(msg) {
-            dumpAutosaveHint.textContent = msg;
-            dumpAutosaveHint.classList.add('saved');
-            setTimeout(() => {
-                dumpAutosaveHint.textContent = 'draft';
-                dumpAutosaveHint.classList.remove('saved');
-            }, 1800);
-        }
-
-        dumpNewBody.addEventListener('input', scheduleDraftSave);
-        dumpNewTitle.addEventListener('input', scheduleDraftSave);
-        dumpNewBody.addEventListener('keydown', e => {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-                e.preventDefault();
-                commitDump();
-            }
-        });
-
-        /* ── ESCAPE ── */
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') {
-                if (dumpScreen.classList.contains('open')) { closeDumpScreen(); return; }
-                if (entryModal.classList.contains('open')) { closeEntryModal(); return; }
-                if (editModal.classList.contains('open'))  { closeEditModal();  return; }
-            }
-        });
-
-        /* ── BOOT ── */
         (function init() {
             const style = document.createElement('style');
             style.textContent = `
@@ -1402,8 +1036,8 @@
                         revealJournal();
                     } else {
                         passwordInput.value = '';
-                        passwordInput.style.borderColor = 'var(--danger)';
-                        setTimeout(() => passwordInput.style.borderColor = 'var(--text-sub)', 500);
+                        passwordInput.style.borderColor = '#ef4444';
+                        setTimeout(() => passwordInput.style.borderColor = 'var(--muted)', 500);
                     }
                 });
             }
